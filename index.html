@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>播放器</title>
+		<link rel="stylesheet" type="text/css" href="layui/css/layui.css" media="all" />
+		<style>
+			html, body{
+				height: 98%;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="layui-fluid larry-wrapper" style="height: 100%;">
+			<div class="layui-row" style="height: 100%;">
+					<div class="larry-group" id="larry_group">
+						<button class="layui-btn layui-btn-xs" data-type="playAll">
+							<i class="layui-icon">&#xe652;</i><cite>全部播放</cite>
+						</button>
+						<button class="layui-btn layui-btn-xs layui-btn-danger" data-type="cleanAll">
+							<i class="layui-icon">&#xe640;</i><cite>全部清空</cite>
+						</button>
+						<label id="state_label">选择分屏：</label>
+						<div class="layui-inline layui-form" lay-filter="selFilter">
+							<select lay-filter="screen" id="split_screen"></select>
+						</div>
+					</div>
+					<div id="video_player" style="height: 97%;">
+						<iframe id="video_iframe" class="larry-iframe" width="100%" height="100%" frameborder="0" scrolling="no"></iframe>
+					</div>
+			</div>
+		</div>
+		<script type="text/javascript" src="lib/jquery/jquery.min.js"></script>
+		<script type="text/javascript" src="layui/layui.js"></script>
+		<script type="text/javascript" src="lib/vue/vue.min.js"></script>
+		<script type="text/javascript" src="js/common/common.js"></script>
+		<script type="text/javascript" src="js/main.js"></script>
+	</body>
+</html>

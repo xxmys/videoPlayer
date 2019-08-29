@@ -1,0 +1,173 @@
+/**
+ * 播放器相关样式
+ */
+
+/*基本布局*/
+
+html,body{
+	height: 100%;
+	margin: auto;
+}
+
+.player {
+	position: absolute;
+	height: 100%;
+	width: 100%;
+}
+
+.video-js {
+	width: 100%;
+	height: 100%;
+}
+
+.page {
+	display: flex;
+	display: -webkit-flex;
+	/* min-height: 100vh; */
+	flex-direction: column;
+}
+
+.header {
+	/* background: #cecece; */
+	color: #FFFFFF;
+	background-color: #191919;
+	min-height: 20px;
+	/* line-height: 25px; */
+	text-align: center;
+}
+
+.content {
+	/* background: #bbbbbb; */
+	flex: 1;
+	/* 1 代表盡可能最大，會自動填滿除了 header footer 以外的空間 */
+	position: relative;
+}
+
+.footer {
+	min-height: 5px;
+	background-color: #191919;
+}
+
+
+/**播放器控制条**/
+.control {
+	position: absolute;
+	/* background: rgba(255, 255, 0, 0.3); */
+	background-color: #AAAAAA;
+	width: 85%;
+	height: 25px;
+	border-radius: 5px;
+	left: 50%;
+	bottom: 1px;
+	transform: translateX(-50%);
+}
+
+.control div {
+	display: inline-block;
+	line-height: 25px;
+	margin-left: 10px;
+	font-size: 18px;
+	color: #fff;
+	cursor:pointer; 
+}
+
+.control .right div{
+	/* color: rgb(255, 255, 0); */
+	color: #FFFFFF;
+}
+.right{
+	float: right;
+}
+.expand {
+	margin-right: 10px;
+}
+/**1、4、9、16、25分屏播放器高度**/
+.h_screen_one{
+	height: 100%;
+}
+.h_screen_two{
+	height: 50%;
+}
+.h_screen_three{
+	height: 33%;
+}
+.h_screen_four{
+	height: 25%;
+}
+.h_screen_five{
+	height: 20%;
+}
+/**25分屏播放器宽度**/
+.w_screen_five{
+	float: left;
+	width: 20%;
+	position: relative;
+    box-sizing: border-box;
+}
+
+/**播放器云台控制面板**/
+.ptz-block {
+	position: absolute;
+	z-index: 99999;
+	height: 220px;
+	width: 150px;
+	right: 20px;
+	margin-top: 1%;
+	text-align: center;
+	font-size: 24px;
+	background: hsla(0, 0%, 93%, .6);
+	border-radius: 16px;
+	overflow: hidden;
+	display: none;
+}
+
+/**标准控制面板**/
+.ptz-block .ptz-cell{
+	line-height: 50px;
+	height: 50px;
+	width: 50px;
+	position: absolute;
+	cursor: pointer;
+}
+
+.ptz-block .ptz-up{
+	top: 70px;
+	left: 50px;
+}
+
+.ptz-block .ptz-left{
+	top: 120px;
+	left: 0;
+}
+
+.ptz-block .ptz-center{
+	top: 120px;
+	left: 50px;
+	width: 50px;
+	height: 50px;
+	line-height: 50px;
+	position: absolute;
+	border-radius: 25px;
+	background: hsla(0, 0%, 80%, .2);
+	/* cursor: move; */
+}
+
+.ptz-block .ptz-right{
+	top: 120px;
+	left: 100px;
+}
+
+.ptz-block .ptz-down{
+	top: 165px;
+	left: 50px;
+}
+
+.ptz-block .ptz-plus{
+	top: 25px;
+	left: 5px;
+}
+
+.ptz-block .ptz-minus{
+	top: 25px;
+	right: 5px;
+}
