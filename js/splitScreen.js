@@ -241,7 +241,7 @@ function init(index) {
 		return;
 	}
 	var myplayer = videojs('my-video' + (index-1), {
-		teachOrder: ['html5', 'flvjs', 'flash']
+		teachOrder: ['flvjs']
 	}, function() {
 		players.push(this);
 		var d = vm.items[index-1];
