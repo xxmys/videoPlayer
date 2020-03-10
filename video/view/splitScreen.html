@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>视频分屏</title>
+		<link href="../../layui/css/layui.css" rel="stylesheet" />
+		<link href="../../video/font-awesome-4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+		<link href="../../video/css/player.css" rel="stylesheet" />
+		<style>
+			.palyer_bg_color{
+				background-color: #FFFFFF;
+			}
+			.palyer_bg_color1{
+				background-color: red;
+			}
+			.ptz_img{
+				width: 100%;
+				height: 100%;
+			}
+			.fa_color_red{
+				color:red
+			}
+			.fa_color_white{
+				color:white
+			}
+			.tabBtn{
+				    width: 3%;
+				    height: 100%;
+				    line-height: 100%;
+				    text-align: center;
+				    font-size: 20px;
+				    border: 0;
+				    border-radius: 50%;
+				    background-color: rgba(0,0,0,.2);
+				    color: #fff;
+				    -webkit-transition-duration: .3s;
+				    transition-duration: .3s;
+				    cursor: pointer;
+			}
+			
+		</style>
+	</head>
+	<body>
+		<div id="video_screen" class="layui-row layui-col-space5" style="height: 100%; margin: auto;">
+			<template v-for="(screen,index) in screens">
+				<div v-bind:id="getId(index)" v-bind:class="getClass(index)" class="page"
+				 v-on:click="playByUrl(index)">
+					<div style="width: 100%; height: 100%;">
+						<easy-player :video-url="screen.url" auto-play="true" muted="true" stretch="true" :video-title="screen.video_addr" snap-url="../../img/main/v.jpg">
+						</easy-player>
+					</div>
+					<template v-if="callMode == 4">
+						<div :id="getPtzId(index)" class="ptz-block-app">
+							<div title="上" class="ptz-cell-app ptz-up-app up ptz normal_ptz_up" @touchstart="appPtzcontrol(index,'up')" @touchmove="stopcontrol(index,'up')"
+							 @touchend="appStopcontrol(index,'up')">
+							</div>
+							<div title="左" class="ptz-cell-app ptz-left-app left ptz normal_ptz_left" @touchstart="appPtzcontrol(index,'left')" @touchmove="stopcontrol(index,'left')"
+							 @touchend="appStopcontrol(index,'left')">
+							</div>
+							<div title="云台控制" class="ptz-center-app">
+								<img class="ptz_img" src="../../video/img/center.png" />
+							</div>
+							<div title="右" class="ptz-cell-app ptz-right-app right ptz normal_ptz_right" @touchstart="appPtzcontrol(index,'right')" @touchmove="stopcontrol(index,'right')"
+							 @touchend="appStopcontrol(index,'right')">
+							</div>
+							<div title="下" class="ptz-cell-app ptz-down-app down ptz normal_ptz_down" @touchstart="appPtzcontrol(index,'down')" @touchmove="stopcontrol(index,'down')"
+							 @touchend="appStopcontrol(index,'down')">
+							</div>
+							<div title="放" class="ptz-cell-app ptz-plus-app zoomout focusing normal_ptz_zoomout" @touchstart="appPtzcontrol(index,'zoomout')" @touchmove="stopcontrol(index,'zoomout')"
+							 @touchend="appStopcontrol(index,'zoomout')">
+							</div>
+							<div title="缩" class="ptz-cell-app ptz-minus-app zoomin focusing normal_ptz_zoomin" @touchstart="appPtzcontrol(index,'zoomin')" @touchmove="stopcontrol(index,'zoomin')"
+							 @touchend="appStopcontrol(index,'zoomin')">
+							</div>
+						</div>
+					</template>
+					<template v-else>
+						<div v-bind:id="getPtzId(index)" class="ptz-block ui-draggable" @mouseenter="enter(index)" @mouseleave="leave(index)">
+							<div title="上" class="ptz-cell ptz-up up ptz" @mousedown="ptzcontrol(index,'up')" @mouseup="stopcontrol(index,'up')">
+								<i class="fa fa-chevron-up"></i>
+							</div>
+							<div title="左" class="ptz-cell ptz-left left ptz" @mousedown="ptzcontrol(index,'left')" @mouseup="stopcontrol(index,'left')">
+								<i class="fa fa-chevron-left"></i>
+							</div>
+							<div title="云台控制" class="ptz-center ui-draggable-handle"><i class="fa fa-arrows"></i></div>
+							<div title="右" class="ptz-cell ptz-right right ptz" @mousedown="ptzcontrol(index,'right')" @mouseup="stopcontrol(index,'right')">
+								<i class="fa fa-chevron-right"></i>
+							</div>
+							<div title="下" class="ptz-cell ptz-down down ptz" @mousedown="ptzcontrol(index,'down')" @mouseup="stopcontrol(index,'down')">
+								<i class="fa fa-chevron-down"></i>
+							</div>
+							<div title="放" class="ptz-cell ptz-plus zoomout focusing" @mousedown="ptzcontrol(index,'zoomout')" @mouseup="stopcontrol(index,'zoomout')">
+								<i class="fa fa-plus-circle"></i>
+							</div>
+							<div title="缩" class="ptz-cell ptz-minus zoomin focusing" @mousedown="ptzcontrol(index,'zoomin')" @mouseup="stopcontrol(index,'zoomin')">
+								<i class="fa fa-minus-circle"></i>
+							</div>
+						</div>
+					</template>
+					<div v-bind:id="getTabBtnId(index)" style="z-index: 99999; position: absolute; height: 5%; width: 100%; top:50%;">
+						<button v-on:click="playLast(index)" class="layui-icon tabBtn" style="left: 20px; position: absolute;">&#xe603;</button>
+						<button v-on:click="playNext(index)" class="layui-icon tabBtn" style="right:20px; position: absolute;">&#xe602;</button>
+					</div>
+					
+				</div>
+			</template>
+		</div>
+		<script type="text/javascript" src="../../js/lib/jquery/jquery.min.js"></script>
+		<script type="text/javascript" src="../../js/lib/jquery/jquery-ui.js"></script>
+		<script type="text/javascript" src="../../video/easyplayer/EasyPlayer-element.min.js"></script>
+		<script type="text/javascript" src="../../layui/layui.js"></script>
+		<script type="text/javascript" src="../../js/lib/vue/vue.js"></script>
+		<script type="text/javascript" src="../../js/common/common.js"></script>
+		<script type="text/javascript" src="../../video/js/common/videoComm.js"></script>
+		<script type="text/javascript" src="../../video/js/splitScreen.js"></script>
+	</body>
+</html>

@@ -26,35 +26,38 @@ Video.Group.Type = {
 }
 
 // 视频NVR信息一次加载
-top.videoNVRMap = top.videoNVRMap || {};
+// top.videoNVRMap = top.videoNVRMap || {};
 
-top.nvr_load_sign = top.nvr_load_sign || false; //NVR信息加载完成标志
+// top.nvr_load_sign = top.nvr_load_sign || false; //NVR信息加载完成标志
 
 //执行AJAX请求
 Video.Nvr.getNVRData = function() {
-	if ($.isEmptyObject(top.videoNVRMap)) {
+	// if ($.isEmptyObject(top.videoNVRMap)) {
 		Ajax.Submission("post", "/scada/video/nvr/listAllData", "", function(data) {
 			setNVRData(data);
-			top.nvr_load_sign = true;
+			// top.nvr_load_sign = true;
 		}, function(data) {
 			console.log(data.msg);
 		});
-	}
+	// }
 }
 
 //格式化数据
 function setNVRData(datas) {
+	var videoNVRMap = {};
 	for (var i = 0; i < datas.data.length; i++) {
 		var nvr_key = datas.data[i].id;
-		top.videoNVRMap[nvr_key] = datas.data[i];
+		videoNVRMap[nvr_key] = datas.data[i];
 	}
+	LocalData.setNVR(videoNVRMap);
 }
 //根据key获取数据
 Video.Nvr.getData = function(key1) {
+	var videoNVRMap =  LocalData.getNVR();
 	if (key1 == undefined) {
-		return top.videoNVRMap;
+		return videoNVRMap;
 	}
-	return top.videoNVRMap[key1];
+	return videoNVRMap[key1];
 }
 
 //根据设备加载摄像头
@@ -62,6 +65,17 @@ Video.Camera.listCamera = function(device_id) {
 	return new Promise(function(resolve, reject){        //做一些异步操作
        Ajax.Post("/scada/video/camera/listCamera", {
        	device_id: device_id
+       }, function(data) {
+       		resolve(data.data);
+       });
+    });
+	
+}
+//根据摄像头ID查询
+Video.Camera.listCameraByIds = function(camera_ids) {
+	return new Promise(function(resolve, reject){        //做一些异步操作
+       Ajax.Post("/scada/video/camera/queryCameraByIds", {
+       	ids: camera_ids
        }, function(data) {
        		resolve(data.data);
        });
@@ -84,7 +98,7 @@ Video.EasyNvr.ajaxGet = function(url, jsonData, successFunc) {
 		xhrFields: {
 			withCredentials: true
 		},
-		crossDomain: true,
+		// crossDomain: true,
 		success: function(e) {
 			if (typeof successFunc != "undefined" && $.isFunction(successFunc)) {
 				successFunc(e);
@@ -93,6 +107,9 @@ Video.EasyNvr.ajaxGet = function(url, jsonData, successFunc) {
 		error: function(e) {
 			if (e.status == "401") {
 				console.log("Token验证失败！");
+			}else if(e.status == "403"){
+				console.log("NVR授权时间到期，请联系管理员！");
+				
 			}
 		},
 	});
@@ -101,8 +118,8 @@ Video.EasyNvr.ajaxGet = function(url, jsonData, successFunc) {
 //格式化请求地址
 Video.Url.baseUrl = "";
 Video.Url.getBaseUrl = function(ip, port, param) {
-	// return "http://" + ip + ":" + port + param;
-	return "/swvideo"+param;
+	return "http://" + ip + ":" + port + param;
+	// return "/swvideo"+param;
 	// return "/swvideo";
 	// return "http://192.168.100.22:10800";
 }
@@ -122,7 +139,7 @@ Video.Type.getHLSAgree = function() {
 }
 
 Video.Type.getFLVAgree = function() {
-	return "FLV";
+	return "flv";
 }
 //全屏
 Video.Player.launchIntoFullscreen = function(element) {
@@ -161,6 +178,19 @@ Video.Player.isFullscreen = function(docm) {
  * @param successFunc 回调函数
  */
 Video.EasyNvr.loginNVR = function(data, successFunc) {
+	Video.EasyNvr.login (data,function(e){
+		var obj = {
+			tokenObj:e,
+			loginTime:new Date()
+		};
+		LocalData.setData(data.ip + data.port + data.account, obj);
+		if (typeof successFunc != "undefined" && $.isFunction(successFunc)) {
+			successFunc(e);
+		}
+	});
+}
+
+Video.EasyNvr.login = function(data, successFunc){
 	var ip = data.ip;
 	var port = data.port;
 	var url = Video.Url.getRequestUrl(ip, port, "", "/api/v1/login");
@@ -168,11 +198,6 @@ Video.EasyNvr.loginNVR = function(data, successFunc) {
 			username: data.account,
 			password: data.pwd_encrypt
 		}, function(e) {
-			var obj = {
-				tokenObj:e,
-				loginTime:new Date()
-			};
-			LocalData.setData(ip + port + data.account, obj);
 			if (typeof successFunc != "undefined" && $.isFunction(successFunc)) {
 				successFunc(e);
 			}
@@ -194,7 +219,7 @@ Video.Url.getVideoUrl = function(param, data,successFunc) {
 			videoSrc = Video.Url.baseUrl + vUrl; //新的视频播放地址
 		}
 		if (param.protocol == "RTMP") {
-			videoSrc = vUrl; //新的视频播放地址
+			videoSrc =  vUrl; //新的视频播放地址
 		}
 		if (typeof successFunc != "undefined" && $.isFunction(successFunc)) {
 			successFunc(videoSrc);
@@ -214,9 +239,8 @@ Video.Url.getLiveUrlByNVR = function(data,videoType,callback){
 	var video_param = {};
 	video_param.protocol = videoType;
 	var nvrData = Video.Nvr.getData(data.nvr_id);
-	var key = nvrData.ip + nvrData.port + nvrData.account;
 	video_param.channel = data.sub_channel;//子码流
-	if (!Video.EasyNvr.checkLogin(key)) { //判断是否登录过
+	if (!Video.EasyNvr.checkLogin(nvrData)) { //判断是否登录过
 		Video.EasyNvr.loginNVR(nvrData, function() {
 			Video.Url.getVideoUrl(video_param, nvrData, function(url) {
 				if (typeof callback != "undefined" && $.isFunction(callback)) {
@@ -234,17 +258,20 @@ Video.Url.getLiveUrlByNVR = function(data,videoType,callback){
 }
 
 //判断是否登录过
-Video.EasyNvr.checkLogin = function(key){
-	var obj = LocalData.getData(key);
+Video.EasyNvr.checkLogin = function(nvrData){
 	var bool = false;
-	var d1 =  new Date();
-	if(!comm.isEmpty(obj)){
-		var nvrToken = obj.tokenObj;
-		var d = new Date(obj.loginTime);
-		var timeOut =  nvrToken.TokenTimeout;
-		d.setSeconds(d.getSeconds()+timeOut);
-		if(d>d1){
-			bool = true;
+	if(!comm.isEmpty(nvrData)){
+		var key = nvrData.ip + nvrData.port + nvrData.account;
+		var obj = LocalData.getData(key);
+		var d1 =  new Date();
+		if(!comm.isEmpty(obj)){
+			var nvrToken = obj.tokenObj;
+			var d = new Date(obj.loginTime);
+			var timeOut =  nvrToken.TokenTimeout;
+			d.setSeconds(d.getSeconds()+timeOut);
+			if(d>d1){
+				bool = true;
+			}
 		}
 	}
 	return bool;
@@ -265,6 +292,21 @@ Video.Channel.getChannelInfo = function(param, data,successFunc){
  */
 Video.ptz.control = function(nvr_id,param,callback){
 	var nvrData = Video.Nvr.getData(nvr_id);
+	var url = Video.Url.getRequestUrl(nvrData.ip, nvrData.port, nvrData.pre_param, "/api/v1/ptzcontrol");
+	Video.EasyNvr.ajaxGet(url, param, function(e) {
+		if (typeof callback != "undefined" && $.isFunction(callback)) {
+			callback(videoSrc);
+		}
+	});
+}
+
+/**
+ * 云台控制
+ * @nvrId
+ * @param {channel:"",command:"",speed:""}
+ */
+Video.ptz.appControl = function(nvrData,param,callback){
+	// var nvrData = Video.Nvr.getData(nvr_id);
 	var url = Video.Url.getRequestUrl(nvrData.ip, nvrData.port, nvrData.pre_param, "/api/v1/ptzcontrol");
 	Video.EasyNvr.ajaxGet(url, param, function(e) {
 		if (typeof callback != "undefined" && $.isFunction(callback)) {

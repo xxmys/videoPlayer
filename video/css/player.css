@@ -13,18 +13,32 @@ html,body{
 	position: absolute;
 	height: 100%;
 	width: 100%;
+	display: block;
+	vertical-align: top;
+	box-sizing: border-box;
+	color: #fff;
+	background-color: #000;
+	padding: 0;
+	font-size: 10px;
+	line-height: 1;
+	font-weight: 400;
+	font-style: normal;
+	font-family: Arial,Helvetica,sans-serif;
+	word-break: initial;
+
 }
 
-.video-js {
-	width: 100%;
-	height: 100%;
-}
-
-.page {
+/* .page {
 	display: flex;
 	display: -webkit-flex;
 	/* min-height: 100vh; */
-	flex-direction: column;
+	/*flex-direction: column;
+} */
+.page{
+	height: 100%;
+	position: relative;
+	left: 0;
+	top: 0;
 }
 
 .header {
@@ -105,22 +119,90 @@ html,body{
     box-sizing: border-box;
 }
 
-/**播放器云台控制面板**/
-.ptz-block {
+/**
+ * app
+ */
+.ptz-block-app {
 	position: absolute;
 	z-index: 99999;
 	height: 220px;
 	width: 150px;
 	right: 20px;
-	margin-top: 1%;
+	top: 20px;
 	text-align: center;
 	font-size: 24px;
 	background: hsla(0, 0%, 93%, .6);
 	border-radius: 16px;
 	overflow: hidden;
-	display: none;
 }
 
+/**标准控制面板**/
+.ptz-block-app .ptz-cell-app{
+	line-height: 50px;
+	height: 50px;
+	width: 50px;
+	position: absolute;
+	cursor: pointer;
+}
+
+.ptz-block-app .ptz-up-app{
+	top: 70px;
+	left: 50px;
+}
+
+.ptz-block-app .ptz-left-app{
+	top: 120px;
+	left: 0;
+}
+
+.ptz-block-app .ptz-center-app{
+	top: 120px;
+	left: 50px;
+	width: 50px;
+	height: 50px;
+	line-height: 50px;
+	position: absolute;
+	border-radius: 25px;
+	background: hsla(0, 0%, 80%, .2);
+	/* cursor: move; */
+}
+
+.ptz-block-app .ptz-right-app{
+	top: 120px;
+	left: 100px;
+}
+
+.ptz-block-app .ptz-down-app{
+	top: 170px;
+	left: 50px;
+}
+
+.ptz-block-app .ptz-plus-app{
+	top: 25px;
+	left: 5px;
+}
+
+.ptz-block-app .ptz-minus-app{
+	top: 25px;
+	right: 5px;
+}
+
+/**
+ * 播放器云台控制面板
+ */
+.ptz-block {
+	position: absolute;
+	z-index: 99999;
+	width: 150px;
+	height: 220px;
+	right: 20px;
+	top: 20px;
+	text-align: center;
+	font-size: 24px;
+	background: hsla(0,0%,93%,0);
+	border-radius: 16px;
+	overflow: hidden;
+}
 /**标准控制面板**/
 .ptz-block .ptz-cell{
 	line-height: 50px;
@@ -158,7 +240,7 @@ html,body{
 }
 
 .ptz-block .ptz-down{
-	top: 165px;
+	top: 170px;
 	left: 50px;
 }
 
@@ -170,4 +252,61 @@ html,body{
 .ptz-block .ptz-minus{
 	top: 25px;
 	right: 5px;
+}
+
+.normal_ptz_up{
+	background:url(../img/up.png) no-repeat 1px 1px;
+}
+.normal_ptz_down{
+	background:url(../img/down.png) no-repeat 1px 1px;
+}
+.normal_ptz_left{
+	background:url(../img/left.png) no-repeat 1px 1px;
+}
+.normal_ptz_right{
+	background:url(../img/right.png) no-repeat 1px 1px;
+}
+.normal_ptz_zoomout{
+	background:url(../img/jia.png) no-repeat 1px 1px;
+}
+.normal_ptz_zoomin{
+	background:url(../img/jian.png) no-repeat 1px 1px;
+}
+
+.select_ptz_up{
+	background:url(../img/select_up.png) no-repeat 1px 1px;
+}
+.select_ptz_down{
+	background:url(../img/select_down.png) no-repeat 1px 1px;
+}
+.select_ptz_left{
+	background:url(../img/select_left.png) no-repeat 1px 1px;
+}
+.select_ptz_right{
+	background:url(../img/select_right.png) no-repeat 1px 1px;
+}
+.select_ptz_zoomout{
+	background:url(../img/select_jia.png) no-repeat 1px 1px;
+}
+.select_ptz_zoomin{
+	background:url(../img/select_jian.png) no-repeat 1px 1px;
+}
+
+.no_ptz_up{
+	background:url(../img/no_up.png) no-repeat 1px 1px;
+}
+.no_ptz_down{
+	background:url(../img/no_down.png) no-repeat 1px 1px;
+}
+.no_ptz_left{
+	background:url(../img/left.png) no-repeat 1px 1px;
+}
+.no_ptz_right{
+	background:url(../img/no_right.png) no-repeat 1px 1px;
+}
+.no_ptz_zoomout{
+	background:url(../img/no_jia.png) no-repeat 1px 1px;
+}
+.no_ptz_zoomin{
+	background:url(../img/no_jian.png) no-repeat 1px 1px;
 }

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>app视频播放器</title>
+		<link rel="stylesheet" type="text/css" href="../../../layui/css/layui.css" media="all">
+		<link rel="stylesheet" type="text/css" href="../../../css/main/common.css" media="all">
+		<link rel="stylesheet" type="text/css" href="../../../css/modules/comm.css" media="all">
+		<style>
+			html,body{
+				height: 100%;
+			}
+			/* *{
+				font-size: 60px;
+			} */
+		</style>
+	</head>
+	<body>
+		<div id="video_player" style="width: 100%; height: 100%;">
+			<iframe id="video_iframe" class="larry-iframe" width="100%" height="98%" frameborder="0" scrolling="no"></iframe>
+		</div>
+		<script type="text/javascript" src="../../../js/lib/jquery/jquery.min.js"></script>
+		<script type="text/javascript" src="../../../layui/layui.js"></script>
+		<script type="text/javascript" src="../../../js/common/common.js"></script>
+		<script type="text/javascript" src="../../../video/js/common/videoComm.js"></script>
+		<script>
+			window.callMode = 4; //调用方式
+			//数据格式
+			// var data = [{url:"/swvideo/nvc/4D8FCA5846B4E6D7BB8D7AE0A485DC4C/flv/hls/stream_2.flv",type:"FLV",video_addr:"我是演示地址"}];
+			var index = 0;
+			//登录nvr
+			var App = {};
+
+			window.control_ptz;
+			//app控制云台
+			Irfs.ParentWin.setFunForChild("app_control_ptz", Irfs.ParentWin.funName.updateDataFun, function(param) {
+				control_ptz = param;
+			});
+
+			App.loginNVR = function(data, successFunc) {
+				var ip = data.ip;
+				var port = data.port;
+				var url = Video.Url.getRequestUrl(ip, port, "", "/api/v1/login");
+				Video.EasyNvr.ajaxGet(url, {
+					username: data.account,
+					password: data.pwd_encrypt
+				}, function(e) {
+					if (typeof successFunc != "undefined" && $.isFunction(successFunc)) {
+						successFunc(e);
+					}
+				});
+			}
+
+			/**
+			 * app调用接口
+			 * @param{} 参数
+			 */
+			function getCamera(param) {
+				var d = [];
+				var nvrData = eval('(' + param.nvrData + ')');
+				var cameraData = eval('(' + param.cameraData + ')');
+
+				var protocol = getVideoTypeByParam(cameraData.param);
+				var video_param = {};
+				video_param.protocol = protocol; //协议
+				video_param.channel = param.sub_channel; //通道
+
+				App.loginNVR(nvrData, function() {
+					Video.Url.getVideoUrl(video_param, nvrData, function(url) {
+						var obj = {};
+						obj.type = protocol;
+						obj.video_addr = param.address;
+						obj.url = url;
+						obj.param = cameraData.param;
+						obj.data = cameraData;
+						obj.nvrData = nvrData;
+						d.push(obj);
+						Irfs.ParentWin.setFunForChild("video_data" + index, Irfs.ParentWin.funName.getDataFun, function() {
+							return d;
+						});
+						$("#video_iframe").attr("src", "/video/view/splitScreen.html?sign=" + index);
+					});
+				});
+			}
+			
+			/**
+			 * 根据是否有ptz获取视频格式
+			 * 有ptz使用flv,其他使用hls
+			 */
+			function getVideoTypeByParam(param){
+				//视频流格式
+				var video_type = 'hls';
+				if(!comm.isEmpty(param)){
+					var obj = eval("(" + param + ")");
+					if(obj.param_ptz == "1" || obj.param_focusing == "1"){
+						video_type = 'flv';//带有云台使用flv格式，延时较小
+					}
+				}
+				return video_type;
+			}
+		</script>
+	</body>
+</html>

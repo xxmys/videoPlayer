@@ -60,7 +60,7 @@ layui.use(['layer', 'form'], function() {
 	function select_set_default() {
 		$("#split_screen").val("4");
 		form.render('select', "selFilter");
-		$("#video_iframe").attr("src", "splitScreen.html");
+		$("#video_iframe").attr("src", "video/view/splitScreen.html");
 	}
 
 	form.on('select(screen)', function(data) {
@@ -94,7 +94,7 @@ layui.use(['layer', 'form'], function() {
 		cleanAll: function() { //清空
 			camera_player_obj = {};
 			formSelects.value('select_group', []); 
-			$("#video_iframe").attr("src", "splitScreen.html");
+			$("#video_iframe").attr("src", "video/view/splitScreen.html");
 		}
 	};
 
